@@ -5,7 +5,7 @@ import { describePermission, hasAnyPermission, hasPermission } from '@/utils/per
 
 /** 操作级权限判定的页面级封装：优先隐藏而非置灰 */
 export function usePermission() {
-  const { permissions } = useAuth()
+  const { permissions, user } = useAuth()
 
   const can = useCallback((required?: PermissionCode) => hasPermission(permissions, required), [permissions])
   const canAny = useCallback(
@@ -18,7 +18,16 @@ export function usePermission() {
   )
 
   return useMemo(
-    () => ({ permissions, can, canAny, canAll, describe: describePermission }),
-    [permissions, can, canAny, canAll],
+    () => ({
+      permissions,
+      user,
+      can,
+      canAny,
+      canAll,
+      /** 与主前端页面保持一致的别名：按权限码判定单个操作是否可见 */
+      has: can,
+      describe: describePermission,
+    }),
+    [permissions, user, can, canAny, canAll],
   )
 }

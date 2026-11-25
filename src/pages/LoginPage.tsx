@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Alert, App, Button, Checkbox, Form, Input, Tag } from 'antd'
+import { Alert, App, Button, Checkbox, Form, Input, Modal, Tag } from 'antd'
 import { CheckCircleFilled, LockOutlined, SafetyCertificateOutlined, UserOutlined } from '@ant-design/icons'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { DASHBOARD_PATH, navTree } from '@/config/menu'
 import { DEMO_ACCOUNTS, DEMO_PASSWORD } from '@/config/roles'
-import { DEMO_ENABLED } from '@/services/auth'
+import { DEMO_ENABLED, changePassword } from '@/services/auth'
 import { useAuth } from '@/store/auth'
 import { readString, removeKeys, STORAGE_KEYS, writeString } from '@/utils/storage'
 
@@ -23,6 +23,9 @@ export function LoginPage() {
   const [params] = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [pwdModalOpen, setPwdModalOpen] = useState(false)
+  const [pwdSaving, setPwdSaving] = useState(false)
+  const [pwdForm] = Form.useForm<{ oldPassword: string; newPassword: string; confirmPassword: string }>()
 
   const from = params.get('from') ?? ''
   const safeFrom = from.startsWith('/') && !from.startsWith('//') ? from : ''
@@ -40,19 +43,45 @@ export function LoginPage() {
     setLoading(true)
     setError(null)
     try {
-      const user = await login({ userName: values.userName.trim(), password: values.password })
+      const result = await login({ userName: values.userName.trim(), password: values.password })
+      const user = result.user
       if (values.remember) {
         writeString(STORAGE_KEYS.loginUserName, user.userName)
       } else {
         removeKeys(STORAGE_KEYS.loginUserName)
       }
       message.success(`欢迎回来，${user.displayName}（${user.roleName}）`)
+      if (result.mustChangePassword) {
+        // 临时密码或被重置后的首次登录：先强制改密，改完由后端吊销令牌、重新登录
+        pwdForm.resetFields()
+        setPwdModalOpen(true)
+        return
+      }
       navigate(safeFrom || DASHBOARD_PATH, { replace: true })
     } catch (submitError) {
       const text = submitError instanceof Error ? submitError.message : '登录失败，请稍后重试'
       setError(text)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleChangePassword = async () => {
+    const values = await pwdForm.validateFields()
+    if (values.newPassword !== values.confirmPassword) {
+      pwdForm.setFields([{ name: 'confirmPassword', errors: ['两次输入的新密码不一致'] }])
+      return
+    }
+    setPwdSaving(true)
+    try {
+      await changePassword(values.oldPassword, values.newPassword)
+      message.success('密码修改成功，请使用新密码重新登录')
+      setPwdModalOpen(false)
+      navigate('/login', { replace: true })
+    } catch (changeError) {
+      message.error(changeError instanceof Error ? changeError.message : '密码修改失败')
+    } finally {
+      setPwdSaving(false)
     }
   }
 
@@ -222,6 +251,45 @@ export function LoginPage() {
           </div>
         </div>
       </div>
+
+      <Modal
+        title="首次登录需修改密码"
+        open={pwdModalOpen}
+        closable={false}
+        maskClosable={false}
+        keyboard={false}
+        confirmLoading={pwdSaving}
+        okText="修改并重新登录"
+        cancelButtonProps={{ style: { display: 'none' } }}
+        onOk={handleChangePassword}
+      >
+        <p style={{ marginBottom: 12, color: '#8793a3', fontSize: 12 }}>
+          当前使用的是临时密码，修改成功后需使用新密码重新登录。
+        </p>
+        <Form form={pwdForm} layout="vertical">
+          <Form.Item name="oldPassword" label="原密码" rules={[{ required: true, message: '请输入原密码' }]}>
+            <Input.Password maxLength={20} />
+          </Form.Item>
+          <Form.Item
+            name="newPassword"
+            label="新密码"
+            rules={[
+              { required: true, message: '请输入新密码' },
+              { pattern: /^(?=.*[A-Za-z])(?=.*\d).{8,20}$/, message: '8-20 位，需同时包含字母和数字' },
+            ]}
+          >
+            <Input.Password maxLength={20} placeholder="8-20 位，包含字母和数字" />
+          </Form.Item>
+          <Form.Item
+            name="confirmPassword"
+            label="确认新密码"
+            dependencies={['newPassword']}
+            rules={[{ required: true, message: '请再次输入新密码' }]}
+          >
+            <Input.Password maxLength={20} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   )
 }

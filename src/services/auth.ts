@@ -78,7 +78,7 @@ export async function login(payload: LoginPayload): Promise<LoginResult> {
       const fallback = DEMO_ENABLED ? resolveDemoPermissions(payload.userName) : []
       user.permissions = fallback.length > 0 ? fallback : ['dashboard:view']
     }
-    return { token, user }
+    return { token, user, mustChangePassword: data.mustChangePassword === true }
   } catch (error) {
     if (DEMO_ENABLED && error instanceof ApiError && error.kind === 'network') {
       return demoLogin(payload.userName)
@@ -105,4 +105,9 @@ export async function logoutRequest(): Promise<void> {
   } catch {
     /* 退出接口失败不阻断本地清理 */
   }
+}
+
+/** 修改密码：临时密码或被重置后的首次改密走此接口，成功后后端吊销全部令牌 */
+export async function changePassword(oldPassword: string, newPassword: string): Promise<void> {
+  await api.post('/auth/change-password', { oldPassword, newPassword })
 }

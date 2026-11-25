@@ -15,6 +15,7 @@ import {
 import { useAuth } from '@/store/auth'
 import { RequireAuth } from './RequireAuth'
 import { PermissionGate } from './PermissionGate'
+import { resolvePage } from './pageRegistry'
 
 const DashboardPage = lazy(() =>
   import('@/pages/DashboardPage').then((module) => ({ default: module.DashboardPage })),
@@ -33,19 +34,23 @@ function DomainRedirect({ domainKey }: { domainKey: string }) {
 /** 187 条业务路由由导航树派生，路由文件只负责装配守卫与懒加载边界 */
 const leafRoutes = flattenLeaves(navTree)
   .filter((leaf) => leaf.path && leaf.path !== DASHBOARD_PATH)
-  .map((leaf) => (
-    <Route
-      key={leaf.path}
-      path={leaf.path!.replace(/^\//, '')}
-      element={
-        <PermissionGate permission={leaf.permission}>
-          <Suspense fallback={<PageLoading />}>
-            <ModulePage />
-          </Suspense>
-        </PermissionGate>
-      }
-    />
-  ))
+  .map((leaf) => {
+    // 已实现真实页面的路径走注册表，其余仍渲染通用占位页
+    const RealPage = resolvePage(leaf.path)
+    return (
+      <Route
+        key={leaf.path}
+        path={leaf.path!.replace(/^\//, '')}
+        element={
+          <PermissionGate permission={leaf.permission}>
+            <Suspense fallback={<PageLoading />}>
+              {RealPage ? <RealPage /> : <ModulePage />}
+            </Suspense>
+          </PermissionGate>
+        }
+      />
+    )
+  })
 
 const domainRoutes = navTree
   .filter((node) => node.key !== 'dashboard')

@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import type { LoginPayload, PermissionCode, SessionUser } from '@/types/navigation'
+import type { LoginPayload, LoginResult, PermissionCode, SessionUser } from '@/types/navigation'
 import { login as loginRequest, logoutRequest } from '@/services/auth'
 import { UNAUTHORIZED_EVENT } from '@/services/http'
 import { readJSON, readString, removeKeys, STORAGE_KEYS, writeJSON, writeString } from '@/utils/storage'
@@ -19,7 +19,7 @@ interface AuthContextValue {
   permissions: PermissionCode[]
   /** 是否因 401 被动失效，登录页据此提示 */
   expired: boolean
-  login: (payload: LoginPayload) => Promise<SessionUser>
+  login: (payload: LoginPayload) => Promise<LoginResult>
   logout: () => Promise<void>
   clearExpired: () => void
 }
@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(result.token)
     setUser(result.user)
     setExpired(false)
-    return result.user
+    return result
   }, [])
 
   const logout = useCallback(async () => {

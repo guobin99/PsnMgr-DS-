@@ -95,4 +95,10 @@ export const api = {
   post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     return client.request({ url, method: 'POST', data, ...config }) as unknown as Promise<T>
   },
+  put<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    return client.request({ url, method: 'PUT', data, ...config }) as unknown as Promise<T>
+  },
+  del<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    return client.request({ url, method: 'DELETE', ...config }) as unknown as Promise<T>
+  },
 }

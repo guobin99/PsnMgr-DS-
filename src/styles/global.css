@@ -1458,3 +1458,287 @@ a {
     padding-right: 12px;
   }
 }
+/* ---------- 系统管理-组织与权限 ---------- */
+.system-page {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.system-context-card .ant-card-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+  padding: 14px;
+}
+
+.system-context-title {
+  margin: 0 0 12px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.system-context-search {
+  margin-bottom: 12px;
+}
+
+.system-context-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 560px;
+}
+
+.system-context-item {
+  display: block;
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid #edf1f7;
+  border-radius: 8px;
+  color: inherit;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.system-context-item + .system-context-item {
+  margin-top: 8px;
+}
+
+.system-context-item:hover,
+.system-context-item.is-active {
+  border-color: #a9c3f9;
+  background: #f4f8ff;
+}
+
+.system-context-item strong {
+  display: block;
+  color: #344054;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.system-context-item span {
+  display: block;
+  margin-top: 3px;
+  color: #8793a3;
+  font-size: 10px;
+}
+
+.system-workspace {
+  min-width: 0;
+}
+
+.system-workspace .filter-card {
+  margin-bottom: 14px;
+}
+
+.system-selected-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding: 11px 14px;
+  border: 1px solid #e6ecf7;
+  border-radius: 8px;
+  color: #5a6b82;
+  background: #f8faff;
+  font-size: 12px;
+}
+
+.system-scope-card {
+  margin-bottom: 14px;
+}
+
+.system-scope-card .ant-card-body {
+  padding: 18px;
+}
+
+.system-scope-options {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.system-tree-panel {
+  height: 380px;
+  padding: 10px 12px;
+  border: 1px solid #edf1f7;
+  border-radius: 8px;
+  overflow-y: auto;
+  background: #fff;
+}
+
+/* 权限矩阵：行=菜单，列=权限位，一屏完成整组配置 */
+.matrix-menu-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.matrix-menu-name {
+  color: #344054;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matrix-menu-no {
+  color: #98a2b3;
+  font-size: 10px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+}
+
+.matrix-col-title {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.matrix-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 24px;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+.matrix-cell.is-changed {
+  background: #e8f1ff;
+  outline: 1px solid #a9c7f0;
+}
+
+.matrix-cell-name {
+  max-width: 56px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #667085;
+  font-size: 10px;
+}
+
+.matrix-na {
+  color: #d0d5dd;
+  font-size: 11px;
+}
+
+.matrix-group-row > td {
+  background: #f7f9fc;
+}
+
+.matrix-group-row .matrix-menu-name {
+  font-weight: 500;
+}
+
+.matrix-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: 1px solid #edf1f7;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.matrix-footer-text {
+  color: #667085;
+  font-size: 12px;
+}
+
+.matrix-footer-text b {
+  color: #101828;
+  font-weight: 600;
+}
+
+.system-page-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* 单栏页面（无左侧上下文） */
+.system-page-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 页面顶部工具条 */
+.system-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+/* 只读提示 */
+.system-readonly-tip,
+.system-context-tip {
+  margin: 10px 0 0;
+  color: #98a2b3;
+  font-size: 11px;
+}
+
+.system-readonly-tip {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #8a6d1a;
+  background: #fffbe6;
+  border: 1px solid #ffe9a8;
+  font-size: 12px;
+}
+
+/* 权限矩阵标题 */
+.system-right-title {
+  margin: 0 0 10px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* 子系统 / 设备勾选项 */
+.system-subsystem-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid #edf1f7;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.system-subsystem-option + .system-subsystem-option {
+  margin-top: 8px;
+}
+
+.system-subsystem-option:hover {
+  border-color: #a9c3f9;
+  background: #f4f8ff;
+}
+
+.system-subsystem-meta {
+  color: #98a2b3;
+  font-size: 11px;
+}
+
+@media (max-width: 1100px) {
+  .system-page {
+    grid-template-columns: 1fr;
+  }
+
+  .system-context-list {
+    max-height: 280px;
+  }
+}

@@ -84,6 +84,8 @@ export interface LoginPayload {
 export interface LoginResult {
   token: string
   user: SessionUser
+  /** 临时密码/密码被重置后首次登录，前端需先强制改密 */
+  mustChangePassword?: boolean
 }
 
 /** 全局菜单搜索索引项 */
